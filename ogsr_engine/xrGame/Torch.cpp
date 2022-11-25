@@ -67,6 +67,8 @@ CTorch::~CTorch(void)
     light_render.destroy();
     light_omni.destroy();
     glow_render.destroy();
+    HUD_SOUND::DestroySound(SndTurnOn);
+    HUD_SOUND::DestroySound(SndTurnOff);
     HUD_SOUND::DestroySound(m_NightVisionOnSnd);
     HUD_SOUND::DestroySound(m_NightVisionOffSnd);
     HUD_SOUND::DestroySound(m_NightVisionIdleSnd);
@@ -77,6 +79,11 @@ void CTorch::Load(LPCSTR section)
 {
     inherited::Load(section);
     light_trace_bone = pSettings->r_string(section, "light_trace_bone");
+
+    if (pSettings->line_exist(section, "snd_turn_on"))
+        HUD_SOUND::LoadSound(section, "snd_turn_on", SndTurnOn, SOUND_TYPE_ITEM_USING);
+    if (pSettings->line_exist(section, "snd_turn_off"))
+        HUD_SOUND::LoadSound(section, "snd_turn_off", SndTurnOff, SOUND_TYPE_ITEM_USING);
 
     m_bNightVisionEnabled = !!pSettings->r_bool(section, "night_vision");
     if (m_bNightVisionEnabled)
@@ -191,6 +198,20 @@ void CTorch::Switch()
 
 void CTorch::Switch(bool light_on)
 {
+    CActor* pActor = smart_cast<CActor*>(H_Parent());
+    if (pActor)
+    {
+        if (light_on && !m_switched_on)
+        {
+            HUD_SOUND::PlaySound(SndTurnOn, pActor->Position(), NULL, !!pActor->HUDview());
+        }
+        else if (!light_on && m_switched_on)
+        {
+            HUD_SOUND::PlaySound(SndTurnOff, pActor->Position(), NULL, !!pActor->HUDview());
+        }
+
+    }
+
     m_switched_on = light_on;
     light_render->set_active(light_on);
     light_omni->set_active(light_on);

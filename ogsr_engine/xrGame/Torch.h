@@ -63,6 +63,10 @@ protected:
     bool m_bNightVisionEnabled{};
     bool m_bNightVisionOn{};
 
+    HUD_SOUND SndTurnOn;
+    HUD_SOUND SndTurnOff;
+
+
     HUD_SOUND m_NightVisionOnSnd;
     HUD_SOUND m_NightVisionOffSnd;
     HUD_SOUND m_NightVisionIdleSnd;
